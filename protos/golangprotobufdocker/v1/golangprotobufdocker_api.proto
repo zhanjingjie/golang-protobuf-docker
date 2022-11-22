@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package golangprotobufdocker.v1;
+
+option go_package = "golangprotobufdockerv1";
+
+import "golangprotobufdocker/v1/golangprotobufdocker.proto";
+
+service GettingStartedService {
+  // GettingStarted is here to help you get started. It is recommended to
+  // leave this here while you bootstrap your service.
+  rpc GettingStarted(GettingStartedRequest) returns (GettingStartedResponse) {}
+}
+
+message GettingStartedRequest {
+  Echo echo = 1;
+}
+
+message GettingStartedResponse {
+  Echo echoed = 1;
+}

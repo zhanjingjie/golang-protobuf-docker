@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package golangprotobufdocker.v1;
+
+option go_package = "golangprotobufdockerv1";
+
+// This message is part of a bootstrap example for GettingStartedService
+message Echo {
+  string hello = 1;
+}
