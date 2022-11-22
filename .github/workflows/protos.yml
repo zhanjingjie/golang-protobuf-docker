@@ -30,4 +30,4 @@ jobs:
       - name: Fetching base branch
         run: git fetch -u origin main:main
       - name: Proto-check
-        run: buf lint # ; buf breaking --against ".git#branch=main"
+        run: buf lint; buf breaking --against ".git#branch=main"

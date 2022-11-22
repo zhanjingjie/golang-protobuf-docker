@@ -1,5 +1,6 @@
 <div align="center">
     <h1>Golang Protobuf Docker</h1>
+    <img src="https://github.com/zhanjingjie/golang-protobuf-docker/actions/workflows/protos.yml/badge.svg" />
 </div>
 
 ## 👀 Overview

@@ -1,6 +1,6 @@
 .PHONY: run proto-check clean
 
-DOCKER_EXEC = docker exec golang-protobuf-docker
+DOCKER_EXEC = docker exec -it golang-protobuf-docker
 GRPC_PORT = 8080
 
 # Create a long running container to optimize for build speed. No need to recreate or attach to the container.
@@ -24,7 +24,7 @@ run-base:
 
 # Exec into the docker container to rerun the Go app.
 run: run-base
-	@docker exec -it golang-protobuf-docker go run /go/src/app/main.go
+	@$(DOCKER_EXEC) go run /go/src/app/main.go
 
 # Check proto definitions against linting rules and fix some linting issues automatically. Check for backward compatibility.
 proto-check: run-base
