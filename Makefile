@@ -29,7 +29,7 @@ run: run-base
 # Check proto definitions against linting rules and fix some linting issues automatically. Check for backward compatibility.
 proto-check: run-base
 	@$(DOCKER_EXEC) buf lint
-	# @$(DOCKER_EXEC) buf breaking --against '.git#branch=main' # This should only be enabled after the protos already exists on the main branch.
+	@$(DOCKER_EXEC) buf breaking --against '.git#branch=main' # This should only be enabled after the protos already exists on the main branch.
 	@$(DOCKER_EXEC) buf format -w --exit-code
 
 # Remove the container and generated proto code.

@@ -6,34 +6,31 @@ import (
 	"log"
 	"net"
 
-	golangprotobufdockerv1 "github.com/zhanjingjie/golang-protobuf-docker/protos/gen/go/golangprotobufdocker/v1"
+	helloworldv1 "github.com/zhanjingjie/golang-protobuf-docker/protos/gen/go/helloworld/v1"
 
 	"google.golang.org/grpc"
 )
 
 const GRPC_PORT int = 8080
 
-// server is used to implement golangprotobufdockerv1.GettingStartedServiceServer.
 type server struct {
-	golangprotobufdockerv1.UnimplementedGettingStartedServiceServer
+	helloworldv1.UnimplementedGreeterServiceServer
 }
 
-// GettingStarted implements golangprotobufdockerv1.GettingStartedServiceServer.
-func (s *server) GettingStarted(ctx context.Context, in *golangprotobufdockerv1.GettingStartedRequest) (*golangprotobufdockerv1.GettingStartedResponse, error) {
-	log.Printf("Received: %v", in.GetName())
-	return &golangprotobufdockerv1.GettingStartedResponse{Echoed: &golangprotobufdockerv1.Echo{Hello: "hello world"}}, nil
+// This implements the GreeterServiceServer interface.
+func SayHello(c context.Context, r *helloworldv1.SayHelloRequest) (*helloworldv1.SayHelloResponse, error) {
+	log.Printf("Received: %v", r.Name)
+	return &helloworldv1.SayHelloResponse{Message: "hello world"}, nil
 }
 
 // Start the gRPC server.
 func main() {
-	fmt.Println("hello world")
-
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", GRPC_PORT))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	golangprotobufdockerv1.RegisterGettingStartedServiceServer(s, &server{})
+	helloworldv1.RegisterGreeterServiceServer(s, &server{})
 	log.Printf("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
