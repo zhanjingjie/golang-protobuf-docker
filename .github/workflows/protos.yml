@@ -1,0 +1,33 @@
+# This GHA workflow will:
+# 1. Check Protobuf linting issues.
+# 2. Enforce backward compatibility.
+name: protos
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - '.github/workflows/protos.yml'
+      - 'protos/**'
+  pull_request:
+    paths:
+      - '.github/workflows/protos.yml'
+      - 'protos/**'
+
+jobs:
+  proto-check:
+    runs-on: [ubuntu-latest]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.19.0'
+      - name: Setup Buf
+        run: go install github.com/bufbuild/buf/cmd/buf@latest
+      - name: Fetching base branch
+        run: git fetch -u origin main:main
+      - name: Proto-check
+        run: buf lint; buf breaking --against ".git#branch=main"
