@@ -24,7 +24,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Set up Buf
-        uses: bufbuild/buf-setup-action@v1
+        uses: bufbuild/buf-setup-action@v1.9.0
+        with:
+          github_token: ${{ github.token }}
       - name: Lint protobuf
         uses: bufbuild/buf-lint-action@v1
         with:
@@ -44,7 +46,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Set up Buf
-        uses: bufbuild/buf-setup-action@v1
+        uses: bufbuild/buf-setup-action@v1.9.0
+        with:
+          github_token: ${{ github.token }}
+      - name: Install protoc
+        uses: arduino/setup-protoc@v1
       - name: Generate code from Protos
         run: buf generate
       - name: Setup Go
