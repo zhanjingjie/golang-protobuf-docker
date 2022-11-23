@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
+	"strconv"
 
 	helloworldv1 "github.com/zhanjingjie/golang-protobuf-docker/protos/gen/go/helloworld/v1"
 
 	"google.golang.org/grpc"
 )
-
-const GRPC_PORT int = 8080
 
 type server struct {
 	helloworldv1.UnimplementedGreeterServiceServer
@@ -25,7 +25,11 @@ func SayHello(c context.Context, r *helloworldv1.SayHelloRequest) (*helloworldv1
 
 // Start the gRPC server.
 func main() {
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", GRPC_PORT))
+	p, err := strconv.Atoi(os.Getenv("GRPC_PORT"))
+	if err != nil {
+		log.Fatalf("cannot load grpc port: %v", err)
+	}
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", p))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

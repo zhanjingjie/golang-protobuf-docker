@@ -1,7 +1,9 @@
 .PHONY: run proto-check clean
 
-DOCKER_EXEC = docker exec -it golang-protobuf-docker
-GRPC_PORT = 8080
+# Load the environment variables in .env into the Makefile.
+include .env
+export
+DOCKER_EXEC = docker exec -it --env-file .env golang-protobuf-docker
 
 # Create a long running container to optimize for build speed. No need to recreate or attach to the container.
 # Some key designs:
