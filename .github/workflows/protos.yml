@@ -23,37 +23,34 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Setup Go
-        uses: actions/setup-go@v3
+      - name: Set up Buf
+        uses: bufbuild/buf-setup-action@v1
+      - name: Lint protobuf
+        uses: bufbuild/buf-lint-action@v1
         with:
-          go-version: '1.19.0'
-      - name: Setup Buf
-        run: go install github.com/bufbuild/buf/cmd/buf@latest
-      - name: Fetching base branch
-        run: git fetch -u origin main:main
-      - name: Proto-check
-        run: buf lint; buf breaking --against ".git#branch=main"
+          input: protos
+      - name: Detect breaking change
+        uses: bufbuild/buf-breaking-action@v1
+        with:
+          against: 'https://github.com/zhanjingjie/golang-protobuf-docker.git#branch=main'
 
   # Publish the Golang gRCP module to Artifactory (free for basic use cases).
   # Customize this job with your own Artifactory setup.
   publish-golang-proto-modules:
-    # if: github.event_name == 'push' # Publish the modules on PR merge.
+    if: github.event_name == 'push' # Publish the modules on PR merge.
     runs-on: [ubuntu-latest]
     needs: [proto-check]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Set up Buf
+        uses: bufbuild/buf-setup-action@v1
+      - name: Generate code from Protos
+        run: buf generate
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
-          go-version: '1.19.0'
-      - name: Setup Buf
-        run: | 
-          go install github.com/bufbuild/buf/cmd/buf@latest
-          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-      - name: Generate code from Protos
-        run: buf generate
+          go-version: '1.19.0'  
       - name: Create Go module
         run: |
           cd protos/gen/go/helloworld/v1
@@ -62,12 +59,7 @@ jobs:
       - name: Install jFrog CLI and configure it
         uses: jfrog/setup-jfrog-cli@v3
         env:
-          # The secrets are stored in the Github repo Settings > Security > Secrets > Actions.
-          # JFrog platform url (for example: https://acme.jfrog.io) 
-          JF_URL: ${{ secrets.JF_URL }}
-          # Basic authentication credentials
-          JF_USER: ${{ secrets.JF_USER }}
-          JF_PASSWORD: ${{ secrets.JF_PASSWORD }}
+          JF_URL: https://zhanjingjie.jfrog.io/artifactory
       - name: Publish the Golang module to jFrog
         run: |
           cd protos/gen/go/helloworld/v1
