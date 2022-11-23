@@ -1,6 +1,7 @@
 # This GHA workflow will:
 # 1. Check Protobuf linting issues.
 # 2. Enforce backward compatibility.
+# 3. Publish Golang gRPC module to Artifactory.
 name: protos
 on:
   push:
@@ -16,6 +17,7 @@ on:
       - 'protos/**'
 
 jobs:
+  # Check Protobuf for linter issues, and backward compatibility issues.
   proto-check:
     runs-on: [ubuntu-latest]
     steps:
@@ -31,3 +33,42 @@ jobs:
         run: git fetch -u origin main:main
       - name: Proto-check
         run: buf lint; buf breaking --against ".git#branch=main"
+
+  # Publish the Golang gRCP module to Artifactory (free for basic use cases).
+  # Customize this job with your own Artifactory setup.
+  publish-golang-proto-modules:
+    # if: github.event_name == 'push' # Publish the modules on PR merge.
+    runs-on: [ubuntu-latest]
+    needs: [proto-check]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.19.0'
+      - name: Setup Buf
+        run: | 
+          go install github.com/bufbuild/buf/cmd/buf@latest
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+      - name: Generate code from Protos
+        run: buf generate
+      - name: Create Go module
+        run: |
+          cd protos/gen/go/helloworld/v1
+          go mod init github.com/zhanjingjie/golang-protobuf-docker/grpc/helloworld
+          go mod tidy
+      - name: Install jFrog CLI and configure it
+        uses: jfrog/setup-jfrog-cli@v3
+        env:
+          # The secrets are stored in the Github repo Settings > Security > Secrets > Actions.
+          # JFrog platform url (for example: https://acme.jfrog.io) 
+          JF_URL: ${{ secrets.JF_URL }}
+          # Basic authentication credentials
+          JF_USER: ${{ secrets.JF_USER }}
+          JF_PASSWORD: ${{ secrets.JF_PASSWORD }}
+      - name: Publish the Golang module to jFrog
+        run: |
+          cd protos/gen/go/helloworld/v1
+          jfrog rt gp jj-go v1.${{ github.run_number }}.0
