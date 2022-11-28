@@ -65,7 +65,7 @@ jobs:
         uses: jfrog/setup-jfrog-cli@v1
       - name: Configure jFrog CLI
         run: >-
-          jfrog config add --artifactory-url "https://zhanjingjie.jfrog.io"
+          jfrog config add --artifactory-url "https://zhanjingjie.jfrog.io/artifactory"
           --interactive=false
       - name: Publish the Golang module to jFrog
         run: |
