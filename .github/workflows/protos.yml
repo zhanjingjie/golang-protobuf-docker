@@ -56,11 +56,6 @@ jobs:
           go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
       - name: Generate code from Protos
         run: buf generate
-      - name: Create Go module
-        run: |
-          cd protos/gen/go/helloworld/v1
-          go mod init github.com/zhanjingjie/golang-protobuf-docker/grpc/helloworld
-          go mod tidy
       - name: Install jFrog CLI and configure it
         uses: jfrog/setup-jfrog-cli@v3
         env:
@@ -68,4 +63,6 @@ jobs:
       - name: Publish the Golang module to jFrog
         run: |
           cd protos/gen/go/helloworld/v1
-          jfrog gp jj-go v1.${{ github.run_number }}.0
+          jfrog rt go-config
+          jfrog rt go build
+          jfrog gp v1.${{ github.run_number }}.0
