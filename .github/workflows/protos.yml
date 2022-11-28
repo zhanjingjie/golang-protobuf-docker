@@ -65,4 +65,5 @@ jobs:
       - name: Publish the Golang module to jFrog
         run: |
           cd protos/gen/go/helloworld/v1
-          jfrog rt go-publish jj-go-local v1.${{ github.run_number }}.0
+          jfrog rt go-config
+          jfrog rt go-publish jj-go v1.${{ github.run_number }}.0
