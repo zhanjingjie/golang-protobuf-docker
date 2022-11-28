@@ -67,4 +67,5 @@ jobs:
       - name: Publish the Golang module to jFrog
         run: |
           cd protos/gen/go/helloworld/v1
-          jfrog rt gp --module "github.com/zhanjingjie/golang-protobuf-docker/grpc/helloworld" jj-go-local v1.${{ github.run_number }}.0
+          go mod init github.com/zhanjingjie/golang-protobuf-docker/grpc/helloworld
+          jfrog rt gp jj-go-local v1.${{ github.run_number }}.0
