@@ -39,7 +39,7 @@ jobs:
   # Publish the Golang gRCP module to Artifactory (free for basic use cases).
   # Customize this job with your own Artifactory setup.
   publish-golang-proto-modules:
-    # if: github.event_name == 'push' # Publish the modules on PR merge.
+    if: github.event_name == 'push' # Publish the modules on PR merge.
     runs-on: [ubuntu-latest]
     needs: [proto-check]
     steps:
